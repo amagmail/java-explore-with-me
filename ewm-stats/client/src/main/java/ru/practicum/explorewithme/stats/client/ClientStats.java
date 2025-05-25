@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class ClientStats extends ClientBase {
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public ClientStats(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -28,14 +28,12 @@ public class ClientStats extends ClientBase {
     }
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, String[] uris, Boolean unique) {
-
         Map<String, Object> parameters = Map.of(
                 "start", start.format(formatter),
                 "end", end.format(formatter),
                 "uris", uris == null ? "" : String.join(",", uris),
                 "unique", unique
         );
-
         return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
 
