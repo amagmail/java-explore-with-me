@@ -1,7 +1,7 @@
 services:
   stats-server:
     build:
-      context: ./ewm-stats/server
+      context: ./stats-server/server
     image: stats-server
     container_name: stats-server
     environment:
@@ -30,7 +30,7 @@ services:
 
   ewm-service:
     build:
-      context: ./ewm-main
+      context: ./ewm-service
     image: ewm-service
     container_name: ewm-service
     environment:
