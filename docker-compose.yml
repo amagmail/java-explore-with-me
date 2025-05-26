@@ -1,7 +1,7 @@
 services:
   stats-server:
     build:
-      context: ./ewm-stats/server
+      context: ./ewm-stats-server/stat-server
     image: stats-server
     container_name: stats-server
     environment:
@@ -19,9 +19,9 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_PASSWORD=dbuser
-      - POSTGRES_USER=dbuser
       - POSTGRES_DB=stats-db
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbuser
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
@@ -30,7 +30,7 @@ services:
 
   ewm-service:
     build:
-      context: ./ewm-main
+      context: ./ewm-main-service
     image: ewm-service
     container_name: ewm-service
     environment:
@@ -49,11 +49,12 @@ services:
     ports:
       - "6542:5432"
     environment:
-      - POSTGRES_PASSWORD=dbuser
-      - POSTGRES_USER=dbuser
       - POSTGRES_DB=ewm-db
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbuser
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
+
