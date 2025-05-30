@@ -25,17 +25,20 @@ public class EventControllerPrivate {
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEventPrivate(@PathVariable("userId") Long userId,
                                            @Valid @RequestBody NewEventDto dto) {
+        log.info("PRIVATE: Получен запрос на создание события: userId={}, dto={}", userId, dto);
         return eventService.createEventPrivate(userId, dto);
     }
 
     @GetMapping("/{userId}/events")
     public Collection<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId) {
+        log.info("PRIVATE: Получен запрос на выборку событий: userId={}", userId);
         return eventService.getEventsPrivate(userId);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
     public EventFullDto getEventPrivate(@PathVariable("userId") Long userId,
                                         @PathVariable("eventId") Long eventId) {
+        log.info("PRIVATE: Получен запрос на выборку события: userId={}, userId={}", userId, eventId);
         return eventService.getEventPrivate(userId, eventId);
     }
 
@@ -43,6 +46,7 @@ public class EventControllerPrivate {
     public EventFullDto updateEventPrivate(@PathVariable("userId") Long userId,
                                            @PathVariable("eventId") Long eventId,
                                            @Valid @RequestBody UpdateEventDto dto) {
+        log.info("PRIVATE: Получен запрос на изменение события: userId={}, dto={}", userId, dto);
         return eventService.updateEventPrivate(userId, eventId, dto);
     }
 
