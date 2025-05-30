@@ -1,9 +1,12 @@
 package ru.practicum.explorewithme.main.event;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
+import ru.practicum.explorewithme.main.event.dto.UpdateEventAdminDto;
+import ru.practicum.explorewithme.main.event.dto.UpdateEventDto;
 import ru.practicum.explorewithme.main.event.service.EventService;
 
 import java.time.LocalDateTime;
@@ -26,14 +29,15 @@ public class EventControllerAdmin {
                                               @RequestParam(required = false) String rangeEnd,
                                               @RequestParam(defaultValue = "0") Integer from,
                                               @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Получен запрос на поиск событий: users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}", users, states, categories, rangeStart, rangeEnd, from, size);
+        log.info("ADMIN: Получен запрос на поиск событий: users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}", users, states, categories, rangeStart, rangeEnd, from, size);
         return eventService.getEventsAdmin(users, categories, states, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/events/{eventId}")
-    public EventFullDto getEvent(@PathVariable("eventId") Long eventId) {
-        log.info("Получен запрос на редактирование данных события и статуса: eventId = {}", eventId);
-        return null;
+    public EventFullDto updateEventPrivate(@PathVariable("eventId") Long eventId,
+                                           @Valid @RequestBody UpdateEventAdminDto dto) {
+        log.info("ADMIN: Получен запрос на изменение события: eventId={}, dto={}", eventId, dto);
+        return eventService.updateEventAdmin(eventId, dto);
     }
 
 }

@@ -72,6 +72,20 @@ public class EventService {
                 .toList();
     }
 
+    public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminDto reqDto) {
+        Event event = EventMapper.fromUpdateEventAdminRequest(reqDto);
+        event = eventRepository.save(event);
+
+        Long catId = event.getCategory();
+        CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
+        //UserShortDto userDto = UserMapper.toUserShortDto(user);
+
+        EventFullDto respDto = EventMapper.toEventFullDto(event);
+        //respDto.setInitiator(userDto);
+        respDto.setCategory(categoryDto);
+        return respDto;
+    }
+
     //---------------------------------------------
     // Public: События
     //---------------------------------------------
