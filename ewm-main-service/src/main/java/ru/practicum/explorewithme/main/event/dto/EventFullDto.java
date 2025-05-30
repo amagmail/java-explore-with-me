@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.main.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;

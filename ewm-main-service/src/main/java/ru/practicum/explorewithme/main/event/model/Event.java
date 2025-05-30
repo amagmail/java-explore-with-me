@@ -33,8 +33,8 @@ public class Event {
     @Column(name = "category")
     private Long category;
 
-    @Column(name = "location")
-    private Long location;
+    //@Column(name = "location")
+    //private Long location;
 
     @Column(name = "initiator")
     private Long initiator;
