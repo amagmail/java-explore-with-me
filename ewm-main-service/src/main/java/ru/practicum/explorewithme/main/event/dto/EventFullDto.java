@@ -1,11 +1,9 @@
 package ru.practicum.explorewithme.main.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;
-import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -30,7 +28,7 @@ public class EventFullDto {
     private Integer participantLimit;
     private LocalDateTime publishedOn;
     private Boolean requestModeration;
-    private State state;
+    private String state;
     private String title;
     private Integer views;
 }

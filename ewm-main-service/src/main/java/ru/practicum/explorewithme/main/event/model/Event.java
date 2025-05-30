@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.explorewithme.main.event.enums.State;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
