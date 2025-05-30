@@ -1,14 +1,14 @@
 package ru.practicum.explorewithme.main.event.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.main.annotation.MinEventDate;
+import ru.practicum.explorewithme.main.event.enums.StateAction;
 
 @Data
 @Builder
-public class NewEventDto {
+public class UpdateEventDto {
 
     @Size(min = 20, message = "Минимальная длина поля 20 символов")
     @Size(max = 2000, message = "Максимальная длина поля 2000 символов")
@@ -26,12 +26,10 @@ public class NewEventDto {
     private String eventDate;
 
     private Long category;
-
-    private Boolean paid; // = false
-
-    private Integer participantLimit; // = 0
-
-    private Boolean requestModeration; // = false
+    private Boolean paid;
+    private Integer participantLimit;
+    private Boolean requestModeration;
+    private StateAction stateAction;
 
     //private Long location;
 

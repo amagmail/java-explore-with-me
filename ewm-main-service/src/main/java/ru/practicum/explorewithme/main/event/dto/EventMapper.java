@@ -64,8 +64,18 @@ public class EventMapper {
         return event;
     }
 
-    public static Event fromUpdateEventUserRequest(UpdateEventUserRequest dto) {
+    public static Event fromUpdateEventUserRequest(UpdateEventDto dto) {
         Event event = new Event();
+        event.setAnnotation(dto.getAnnotation());
+        event.setCategory(dto.getCategory());
+        event.setDescription(dto.getDescription());
+        event.setEventDate(LocalDateTime.parse(dto.getEventDate(), formatter));
+        // TODO: location
+        event.setPaid(dto.getPaid());
+        event.setParticipantLimit(dto.getParticipantLimit());
+        event.setRequestModeration(dto.getRequestModeration());
+        // TODO: stateAction
+        event.setTitle(dto.getTitle());
         return event;
     }
 
