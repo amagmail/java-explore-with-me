@@ -2,6 +2,9 @@ package ru.practicum.explorewithme.main.event.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.explorewithme.main.event.model.Event;
+import ru.practicum.explorewithme.main.exception.NotFoundException;
+import ru.practicum.explorewithme.main.user.dal.UserRepository;
+import ru.practicum.explorewithme.main.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

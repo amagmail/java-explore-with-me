@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
 import ru.practicum.explorewithme.main.event.service.EventService;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,14 +19,20 @@ public class EventControllerAdmin {
     private final EventService eventService;
 
     @GetMapping("/events")
-    public Collection<EventFullDto> getEvents() {
-        log.info("Получен запрос на поиск событий");
-        return eventService.getEvents();
+    public Collection<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
+                                              @RequestParam(required = false) List<String> states,
+                                              @RequestParam(required = false) List<Long> categories,
+                                              @RequestParam(required = false) String rangeStart,
+                                              @RequestParam(required = false) String rangeEnd,
+                                              @RequestParam(defaultValue = "0") Integer from,
+                                              @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен запрос на поиск событий: users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}", users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsAdmin(users, categories, states, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto getEvent(@PathVariable("eventId") Long eventId) {
-        log.info("Получен запрос на редактирование данных события и его статуса: eventId = {}", eventId);
+        log.info("Получен запрос на редактирование данных события и статуса: eventId = {}", eventId);
         return null;
     }
 

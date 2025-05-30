@@ -31,14 +31,14 @@ public class EventControllerPrivate {
 
     @GetMapping("/{userId}/events")
     public Collection<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId) {
-        log.info("PRIVATE: Получен запрос на выборку событий: userId={}", userId);
+        log.info("PRIVATE: Получен запрос на поиск событий: userId={}", userId);
         return eventService.getEventsPrivate(userId);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
     public EventFullDto getEventPrivate(@PathVariable("userId") Long userId,
                                         @PathVariable("eventId") Long eventId) {
-        log.info("PRIVATE: Получен запрос на выборку события: userId={}, userId={}", userId, eventId);
+        log.info("PRIVATE: Получен запрос на поиск события: userId={}, userId={}", userId, eventId);
         return eventService.getEventPrivate(userId, eventId);
     }
 
