@@ -3,7 +3,7 @@ package ru.practicum.explorewithme.main.event.dto;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.explorewithme.main.annotation.MinEventDate;
+import ru.practicum.explorewithme.main.annotation.MinEventDate1h;
 import ru.practicum.explorewithme.main.event.enums.StateAction;
 
 @Data
@@ -22,7 +22,7 @@ public class UpdateEventAdminDto {
     @Size(max = 1200, message = "Максимальная длина поля 120 символов")
     private String title;
 
-    @MinEventDate
+    @MinEventDate1h
     private String eventDate;
 
     private Long category;

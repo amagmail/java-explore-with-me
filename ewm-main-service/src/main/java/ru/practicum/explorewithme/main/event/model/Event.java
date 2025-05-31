@@ -1,14 +1,11 @@
 package ru.practicum.explorewithme.main.event.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.main.event.enums.State;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -58,12 +55,12 @@ public class Event {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "state")
-    private String state;
-
     @Column(name = "paid")
     private Boolean paid;
 
     @Column(name = "request_moderation")
     private Boolean requestModeration;
+
+    @Enumerated(EnumType.STRING)
+    private State state;
 }

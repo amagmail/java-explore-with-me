@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = MinEventDateValidator.class)
-public @interface MinEventDate {
+@Constraint(validatedBy = MinEventDate2hValidator.class)
+public @interface MinEventDate2h {
     String message() default "Event date out of min value";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

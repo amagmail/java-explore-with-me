@@ -6,13 +6,13 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class MinEventDateValidator implements ConstraintValidator<MinEventDate, String> {
+public class MinEventDate1hValidator implements ConstraintValidator<MinEventDate1h, String> {
 
     private LocalDateTime dateTimeFrom;
 
     @Override
-    public void initialize(MinEventDate constraintAnnotation) {
-        dateTimeFrom = LocalDateTime.now().plusHours(2);
+    public void initialize(MinEventDate1h constraintAnnotation) {
+        dateTimeFrom = LocalDateTime.now().plusHours(1);
     }
 
     @Override

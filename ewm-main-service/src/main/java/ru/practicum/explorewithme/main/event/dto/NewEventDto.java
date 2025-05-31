@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.explorewithme.main.annotation.MinEventDate;
+import ru.practicum.explorewithme.main.annotation.MinEventDate2h;
 
 @Data
 @Builder
@@ -25,7 +25,7 @@ public class NewEventDto {
     @NotNull(message = "Поле не может быть NULL")
     private String title;
 
-    @MinEventDate
+    @MinEventDate2h
     @NotNull(message = "Поле не может быть пустым")
     private String eventDate;
 
