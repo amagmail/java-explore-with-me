@@ -31,6 +31,6 @@ public class UpdateEventAdminDto {
     private Boolean requestModeration;
     private StateAction stateAction;
 
-    //private Long location;
+    //TODO: private Long location;
 
 }

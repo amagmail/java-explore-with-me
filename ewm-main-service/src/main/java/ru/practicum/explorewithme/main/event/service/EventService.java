@@ -78,15 +78,28 @@ public class EventService {
         if (reqDto.getAnnotation() != null) {
             event.setAnnotation(reqDto.getAnnotation());
         }
+        if (reqDto.getCategory() != null) {
+            event.setCategory(reqDto.getCategory());
+        }
         if (reqDto.getDescription() != null) {
             event.setDescription(reqDto.getDescription());
-        }
-        if (reqDto.getTitle() != null) {
-            event.setTitle(reqDto.getTitle());
         }
         if (reqDto.getEventDate() != null) {
             event.setEventDate(LocalDateTime.parse(reqDto.getEventDate(), formatter));
         }
+        if (reqDto.getPaid() != null) {
+            event.setPaid(reqDto.getPaid());
+        }
+        if (reqDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(reqDto.getParticipantLimit());
+        }
+        if (reqDto.getRequestModeration() != null) {
+            event.setRequestModeration(reqDto.getRequestModeration());
+        }
+        if (reqDto.getTitle() != null) {
+            event.setTitle(reqDto.getTitle());
+        }
+        //TODO: location;
         switch (reqDto.getStateAction()) {
             case StateAction.PUBLISH_EVENT:
                 if (event.getState() != State.PENDING) {
@@ -162,19 +175,34 @@ public class EventService {
     public EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventDto reqDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        if (!event.getInitiator().equals(userId)) {
+            throw new ConflictException("У пользователя " + userId + " нет доступа к событию " + eventId);
+        }
         if (reqDto.getAnnotation() != null) {
             event.setAnnotation(reqDto.getAnnotation());
+        }
+        if (reqDto.getCategory() != null) {
+            event.setCategory(reqDto.getCategory());
         }
         if (reqDto.getDescription() != null) {
             event.setDescription(reqDto.getDescription());
         }
-        if (reqDto.getTitle() != null) {
-            event.setTitle(reqDto.getTitle());
-        }
         if (reqDto.getEventDate() != null) {
             event.setEventDate(LocalDateTime.parse(reqDto.getEventDate(), formatter));
         }
-        event.setInitiator(userId);
+        if (reqDto.getPaid() != null) {
+            event.setPaid(reqDto.getPaid());
+        }
+        if (reqDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(reqDto.getParticipantLimit());
+        }
+        if (reqDto.getRequestModeration() != null) {
+            event.setRequestModeration(reqDto.getRequestModeration());
+        }
+        if (reqDto.getTitle() != null) {
+            event.setTitle(reqDto.getTitle());
+        }
+        //TODO: location;
         event = eventRepository.save(event);
 
         Long catId = event.getCategory();
