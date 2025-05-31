@@ -1,10 +1,12 @@
 package ru.practicum.explorewithme.main.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.main.annotation.MinEventDate2h;
+import ru.practicum.explorewithme.main.event.model.Location;
 
 @Data
 @Builder
@@ -38,6 +40,7 @@ public class NewEventDto {
 
     private Boolean requestModeration; // = false
 
-    //private Long location;
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    private Location location;
 
 }

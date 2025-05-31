@@ -35,6 +35,7 @@ public class EventService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /*
     public Collection<EventFullDto> getEvents() {
         return eventRepository.findAll().stream()
                 .map(EventMapper::toEventFullDto)
@@ -44,7 +45,7 @@ public class EventService {
     public EventFullDto getEvent(Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         return EventMapper.toEventFullDto(event);
-    }
+    } */
 
     //---------------------------------------------
     // Admin: События
@@ -63,14 +64,11 @@ public class EventService {
         Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
         return eventRepository.findByAdminFilters(users, categories, states, pageable).stream()
                 .map(event -> {
-                    EventFullDto eventDto = EventMapper.toEventFullDto(event);
                     Long catId = event.getCategory();
                     Long userId = event.getInitiator();
                     CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
-                    UserShortDto userDto = UserMapper.toUserShortDto(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId)));
-                    eventDto.setInitiator(userDto);
-                    eventDto.setCategory(categoryDto);
-                    return eventDto;
+                    UserShortDto initiatorDto = UserMapper.toUserShortDto(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId)));
+                    return EventMapper.toEventFullDto(event, categoryDto, initiatorDto);
                 })
                 .toList();
     }
@@ -106,13 +104,11 @@ public class EventService {
                 break;
         }
         event = eventRepository.save(event);
-
         Long catId = event.getCategory();
+        Long userId = event.getInitiator();
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
-
-        EventFullDto respDto = EventMapper.toEventFullDto(event);
-        respDto.setCategory(categoryDto);
-        return respDto;
+        UserShortDto initiatorDto = UserMapper.toUserShortDto(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId)));
+        return EventMapper.toEventFullDto(event, categoryDto, initiatorDto);
     }
 
     //---------------------------------------------
@@ -124,21 +120,16 @@ public class EventService {
     //---------------------------------------------
 
     public EventFullDto createEventPrivate(Long userId, NewEventDto reqDto) {
+
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = EventMapper.fromNewEventDto(reqDto);
         event.setInitiator(userId);
-        event.setCreatedOn(LocalDateTime.now());
-        event.setState(State.PENDING);
         event = eventRepository.save(event);
 
         Long catId = event.getCategory();
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
         UserShortDto userDto = UserMapper.toUserShortDto(user);
-
-        EventFullDto respDto = EventMapper.toEventFullDto(event);
-        respDto.setInitiator(userDto);
-        respDto.setCategory(categoryDto);
-        return respDto;
+        return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }
 
     public Collection<EventShortDto> getEventsPrivate(Long userId) {
@@ -165,10 +156,7 @@ public class EventService {
         Long catId = event.getCategory();
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором " + catId)));
         UserShortDto userDto = UserMapper.toUserShortDto(user);
-        EventFullDto eventDto = EventMapper.toEventFullDto(event);
-        eventDto.setInitiator(userDto);
-        eventDto.setCategory(categoryDto);
-        return eventDto;
+        return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }
 
     public EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventDto reqDto) {
@@ -192,11 +180,7 @@ public class EventService {
         Long catId = event.getCategory();
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
         UserShortDto userDto = UserMapper.toUserShortDto(user);
-
-        EventFullDto respDto = EventMapper.toEventFullDto(event);
-        respDto.setInitiator(userDto);
-        respDto.setCategory(categoryDto);
-        return respDto;
+        return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }
 
 }

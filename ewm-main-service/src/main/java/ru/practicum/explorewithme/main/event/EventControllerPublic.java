@@ -19,13 +19,13 @@ public class EventControllerPublic {
     @GetMapping
     public Collection<EventFullDto> getEvents() {
         log.info("Получен запрос на извлечение событий с возможностью фильтрации");
-        return eventService.getEvents();
+        return null; //eventService.getEvents();
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEvent(@PathVariable("eventId") Long eventId) {
         log.info("Получен запрос на извлечение подробной информации об опубликованном событии: eventId = {}", eventId);
-        return eventService.getEvent(eventId);
+        return null; //eventService.getEvent(eventId);
     }
 
 }

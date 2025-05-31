@@ -1,7 +1,11 @@
 package ru.practicum.explorewithme.main.event.dto;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.explorewithme.main.category.dto.CategoryDto;
+import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.model.Event;
+import ru.practicum.explorewithme.main.event.model.Location;
+import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +15,8 @@ public class EventMapper {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static EventFullDto toEventFullDto(Event event) {
+    public static EventFullDto toEventFullDto(Event event, CategoryDto categoryDto, UserShortDto initiatorDto) {
+        Location location = new Location(event.getLocationLat(), event.getLocationLon());
         return EventFullDto.builder()
                 .annotation(event.getAnnotation())
                 .confirmedRequests(event.getConfirmedRequests())
@@ -19,7 +24,6 @@ public class EventMapper {
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())
                 .id(event.getId())
-                //.location(event.getLocation())
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn())
@@ -27,6 +31,9 @@ public class EventMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .location(null)
+                .initiator(initiatorDto)
+                .category(categoryDto)
                 .build();
     }
 
@@ -61,6 +68,13 @@ public class EventMapper {
         if (dto.getParticipantLimit() == null) {
             event.setParticipantLimit(0);
         }
+        event.setCreatedOn(LocalDateTime.now());
+        event.setState(State.PENDING);
+        if (dto.getLocation() != null) {
+            Location location = dto.getLocation();
+            event.setLocationLat(Float.parseFloat("0.001"));
+            event.setLocationLon(Float.parseFloat("0.002"));
+        }
         return event;
     }
 
@@ -70,12 +84,12 @@ public class EventMapper {
         event.setCategory(dto.getCategory());
         event.setDescription(dto.getDescription());
         event.setEventDate(LocalDateTime.parse(dto.getEventDate(), formatter));
-        // TODO: location
         event.setPaid(dto.getPaid());
         event.setParticipantLimit(dto.getParticipantLimit());
         event.setRequestModeration(dto.getRequestModeration());
-        // TODO: stateAction
         event.setTitle(dto.getTitle());
+        // TODO: location
+        // TODO: stateAction
         return event;
     }
 
@@ -85,12 +99,12 @@ public class EventMapper {
         event.setCategory(dto.getCategory());
         event.setDescription(dto.getDescription());
         event.setEventDate(LocalDateTime.parse(dto.getEventDate(), formatter));
-        // TODO: location
         event.setPaid(dto.getPaid());
         event.setParticipantLimit(dto.getParticipantLimit());
         event.setRequestModeration(dto.getRequestModeration());
-        // TODO: stateAction
         event.setTitle(dto.getTitle());
+        // TODO: location
+        // TODO: stateAction
         return event;
     }
 
