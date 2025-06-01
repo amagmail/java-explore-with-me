@@ -10,6 +10,7 @@ import ru.practicum.explorewithme.main.event.dto.NewEventDto;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
 import ru.practicum.explorewithme.main.event.dto.UpdateEventUserRequest;
 import ru.practicum.explorewithme.main.event.service.EventService;
+import ru.practicum.explorewithme.main.request.dto.RequestDto;
 
 import java.util.Collection;
 
@@ -46,8 +47,23 @@ public class EventControllerPrivate {
     public EventFullDto updateEventPrivate(@PathVariable("userId") Long userId,
                                            @PathVariable("eventId") Long eventId,
                                            @Valid @RequestBody UpdateEventUserRequest dto) {
-        log.info("PRIVATE: Получен запрос на изменение события: userId={}, dto={}", userId, dto);
+        log.info("PRIVATE: Получен запрос на изменение события: userId={}, eventId={}, dto={}", userId, eventId, dto);
         return eventService.updateEventPrivate(userId, eventId, dto);
+    }
+
+    @GetMapping("/{userId}/events/{eventId}/requests")
+    public Collection<RequestDto> getEventRequestsPrivate(@PathVariable("userId") Long userId,
+                                              @PathVariable("eventId") Long eventId) {
+        log.info("PRIVATE: Получен запрос на поиск информации о запросах на участие в событии: userId={}, userId={}", userId, eventId);
+        return eventService.getEventRequestsPrivate(userId, eventId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}/requests")
+    public RequestDto updateEventRequestsPrivate(@PathVariable("userId") Long userId,
+                                           @PathVariable("eventId") Long eventId,
+                                           @Valid @RequestBody UpdateEventUserRequest dto) {
+        log.info("PRIVATE: Получен запрос на изменение заявок на участие в событии: userId={}, eventId={}, dto={}", userId, eventId, dto);
+        return eventService.updateEventRequestsPrivate(userId, eventId, dto);
     }
 
 }

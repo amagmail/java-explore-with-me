@@ -16,6 +16,8 @@ import ru.practicum.explorewithme.main.event.enums.StateAction;
 import ru.practicum.explorewithme.main.event.model.Event;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
+import ru.practicum.explorewithme.main.request.dto.RequestDto;
+import ru.practicum.explorewithme.main.request.dto.RequestMapper;
 import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
@@ -146,8 +148,7 @@ public class EventService {
                     eventDto.setInitiator(userDto);
                     eventDto.setCategory(categoryDto);
                     return eventDto;
-                })
-                .toList();
+                }).toList();
     }
 
     public EventFullDto getEventPrivate(Long userId, Long eventId) {
@@ -205,6 +206,16 @@ public class EventService {
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
         UserShortDto userDto = UserMapper.toUserShortDto(user);
         return EventMapper.toEventFullDto(event, categoryDto, userDto);
+    }
+
+    public Collection<RequestDto> getEventRequestsPrivate(Long userId, Long eventId) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+        eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        return eventRepository.getEventRequestsPrivate(userId, eventId).stream().map(RequestMapper::fromRequest).toList();
+    }
+
+    public RequestDto updateEventRequestsPrivate(Long userId, Long eventId, UpdateEventUserRequest entity) {
+        return null;
     }
 
     //---------------------------------------------
