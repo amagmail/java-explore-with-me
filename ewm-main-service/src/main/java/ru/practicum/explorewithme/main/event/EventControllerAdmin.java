@@ -20,7 +20,7 @@ public class EventControllerAdmin {
     private final EventService eventService;
 
     @GetMapping("/events")
-    public Collection<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
+    public Collection<EventFullDto> getEventsAdmin(@RequestParam(required = false) List<Long> users,
                                               @RequestParam(required = false) List<String> states,
                                               @RequestParam(required = false) List<Long> categories,
                                               @RequestParam(required = false) String rangeStart,

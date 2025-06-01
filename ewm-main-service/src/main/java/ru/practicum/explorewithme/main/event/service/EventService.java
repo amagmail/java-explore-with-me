@@ -10,6 +10,7 @@ import ru.practicum.explorewithme.main.category.dto.CategoryDto;
 import ru.practicum.explorewithme.main.category.dto.CategoryMapper;
 import ru.practicum.explorewithme.main.event.dal.EventRepository;
 import ru.practicum.explorewithme.main.event.dto.*;
+import ru.practicum.explorewithme.main.event.enums.Sorting;
 import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.enums.StateAction;
 import ru.practicum.explorewithme.main.event.model.Event;
@@ -209,30 +210,49 @@ public class EventService {
     //---------------------------------------------
     // Public: События
     //---------------------------------------------
-    /*
-    public Collection<EventFullDto> getEvents() {
-        return eventRepository.findAll().stream()
-                .map(EventMapper::toEventFullDto)
-                .toList();
-    }
 
-    public EventFullDto getEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
-        return EventMapper.toEventFullDto(event);
-    } */
-
-    public List<EventFullDto> getEventsPublic() {
+    public List<EventFullDto> getEventsPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, Sorting sort, Integer from, Integer size) {
         //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
-        return eventRepository.getEventsPublic().stream()
-                .map(event -> {
-                    Long catId = event.getCategory();
-                    CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
-                    Long userId = event.getInitiator();
-                    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
-                    UserShortDto userDto = UserMapper.toUserShortDto(user);
-                    return EventMapper.toEventFullDto(event, categoryDto, userDto);
-                })
-                .toList();
+        LocalDateTime dateFrom = null;
+        if (rangeStart != null) {
+            dateFrom = LocalDateTime.parse(rangeStart, formatter);
+        }
+        LocalDateTime dateTo = null;
+        if (rangeEnd != null) {
+            dateTo = LocalDateTime.parse(rangeEnd, formatter);
+        }
+        if (rangeStart == null && rangeEnd == null) {
+            dateFrom = LocalDateTime.now();
+        }
+        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
+        List<EventFullDto> resp = null;
+        switch (sort) {
+            case Sorting.EVENT_DATE:
+                resp = eventRepository.getEventsPublicOrderByEventDate(text, categories, paid, onlyAvailable, dateFrom, dateTo, pageable).stream()
+                        .map(event -> {
+                            Long catId = event.getCategory();
+                            CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
+                            Long userId = event.getInitiator();
+                            User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+                            UserShortDto userDto = UserMapper.toUserShortDto(user);
+                            return EventMapper.toEventFullDto(event, categoryDto, userDto);
+                        })
+                        .toList();
+                break;
+            case Sorting.VIEWS:
+                resp = eventRepository.getEventsPublicOrderByViews(text, categories, paid, onlyAvailable, dateFrom, dateTo, pageable).stream()
+                        .map(event -> {
+                            Long catId = event.getCategory();
+                            CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
+                            Long userId = event.getInitiator();
+                            User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+                            UserShortDto userDto = UserMapper.toUserShortDto(user);
+                            return EventMapper.toEventFullDto(event, categoryDto, userDto);
+                        })
+                        .toList();
+                break;
+        }
+        return resp;
     }
 
     public EventFullDto getEventPublic(Long eventId) {

@@ -24,11 +24,25 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and (cast(?5 as date) is null or e.eventDate <= ?5)")
     List<Event> getEventsAdmin(List<Long> users, List<Long> categories, List<String> states, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
-    //List<Event> findByInitiatorIn(List<Long> users);
-    //Page<Event> findAll(Pageable pageable);
+    @Query("select e from Event e where e.publishedOn is not null " +
+            "and (?1 is null or lower(e.annotation) like %?1% or lower(e.description) like %?1%) " +
+            "and (?2 is null or e.category in ?2) " +
+            "and (?3 is null or e.paid = ?3) " +
+            "and (?4 is null or ?4 = true or ?4 = false) " +
+            "and (cast(?5 as date) is null or e.eventDate >= ?5) " +
+            "and (cast(?6 as date) is null or e.eventDate <= ?6) " +
+            "order by e.eventDate desc")
+    List<Event> getEventsPublicOrderByEventDate(String text, List<Long> categories, Boolean paid, Boolean onlyAvailable, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
-    @Query("select e from Event e where e.publishedOn is not null order by e.eventDate desc")
-    List<Event> getEventsPublic();
+    @Query("select e from Event e where e.publishedOn is not null " +
+            "and (?1 is null or lower(e.annotation) like %?1% or lower(e.description) like %?1%) " +
+            "and (?2 is null or e.category in ?2) " +
+            "and (?3 is null or e.paid = ?3) " +
+            "and (?4 is null or ?4 = true or ?4 = false) " +
+            "and (cast(?5 as date) is null or e.eventDate >= ?5) " +
+            "and (cast(?6 as date) is null or e.eventDate <= ?6) " +
+            "order by e.views desc")
+    List<Event> getEventsPublicOrderByViews(String text, List<Long> categories, Boolean paid, Boolean onlyAvailable, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
     @Query("select e from Event e where e.id = ?1 and e.publishedOn is not null")
     Event getEventPublic(Long eventId);
