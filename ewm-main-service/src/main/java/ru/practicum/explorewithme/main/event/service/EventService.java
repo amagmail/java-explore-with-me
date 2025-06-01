@@ -217,10 +217,10 @@ public class EventService {
         return eventRepository.getEventRequestsPrivate(userId, eventId).stream().map(RequestMapper::fromRequest).toList();
     }
 
-    public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateResult entity) {
+    public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateRequest entity) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
-        List<Request> items = eventRepository.getEventRequestsPrivate(userId, eventId);
+        List<Request> eventRequests = eventRepository.getEventRequestsPrivate(userId, eventId);
         //TODO: сформировать объект и сохранить статусы заявок, добавить все необходимые проверки
         return null;
     }

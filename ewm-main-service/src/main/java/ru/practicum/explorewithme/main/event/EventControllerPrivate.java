@@ -58,7 +58,7 @@ public class EventControllerPrivate {
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusUpdateResult updateEventRequestsPrivate(@PathVariable("userId") Long userId,
                                                                      @PathVariable("eventId") Long eventId,
-                                                                     @Valid @RequestBody EventRequestStatusUpdateResult dto) {
+                                                                     @Valid @RequestBody EventRequestStatusUpdateRequest dto) {
         log.info("PRIVATE: Получен запрос на изменение заявок на участие в событии: userId={}, eventId={}, dto={}", userId, eventId, dto);
         return eventService.updateEventRequestsPrivate(userId, eventId, dto);
     }
