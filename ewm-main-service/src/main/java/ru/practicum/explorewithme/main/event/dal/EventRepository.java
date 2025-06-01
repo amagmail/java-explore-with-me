@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    @Query("select e from Event e where e.initiator = ?1 order by e.eventDate DESC")
+    @Query("select e from Event e where e.initiator = ?1 order by e.eventDate desc")
     List<Event> getEventsPrivate(Long userId);
 
     @Query("select e from Event e where e.initiator = ?1 and e.id = ?2")
@@ -26,6 +26,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     //List<Event> findByInitiatorIn(List<Long> users);
     //Page<Event> findAll(Pageable pageable);
+
+    @Query("select e from Event e where e.publishedOn is not null order by e.eventDate desc")
+    List<Event> getEventsPublic();
 
     @Query("select e from Event e where e.id = ?1 and e.publishedOn is not null")
     Event getEventPublic(Long eventId);

@@ -221,9 +221,18 @@ public class EventService {
         return EventMapper.toEventFullDto(event);
     } */
 
-    public Collection<EventFullDto> getEventsPublic() {
+    public List<EventFullDto> getEventsPublic() {
         //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
-        return null;
+        return eventRepository.getEventsPublic().stream()
+                .map(event -> {
+                    Long catId = event.getCategory();
+                    CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
+                    Long userId = event.getInitiator();
+                    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+                    UserShortDto userDto = UserMapper.toUserShortDto(user);
+                    return EventMapper.toEventFullDto(event, categoryDto, userDto);
+                })
+                .toList();
     }
 
     public EventFullDto getEventPublic(Long eventId) {
