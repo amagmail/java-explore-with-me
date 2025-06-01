@@ -18,14 +18,14 @@ public class EventControllerPublic {
 
     @GetMapping
     public Collection<EventFullDto> getEvents() {
-        log.info("Получен запрос на извлечение событий с возможностью фильтрации");
-        return null; //eventService.getEvents();
+        log.info("PUBLIC: Получен запрос на поиск событий с возможностью фильтрации");
+        return eventService.getEventsPublic();
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEvent(@PathVariable("eventId") Long eventId) {
-        log.info("Получен запрос на извлечение подробной информации об опубликованном событии: eventId = {}", eventId);
-        return null; //eventService.getEvent(eventId);
+        log.info("Получен запрос на поиск подробной информации об опубликованном событии: eventId = {}", eventId);
+        return eventService.getEventPublic(eventId);
     }
 
 }
