@@ -16,7 +16,6 @@ public class EventMapper {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static EventFullDto toEventFullDto(Event event, CategoryDto categoryDto, UserShortDto initiatorDto) {
-        Location location = new Location(event.getLocationLat(), event.getLocationLon());
         return EventFullDto.builder()
                 .annotation(event.getAnnotation())
                 .confirmedRequests(event.getConfirmedRequests())
@@ -31,9 +30,9 @@ public class EventMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(event.getViews())
-                .location(null)
                 .initiator(initiatorDto)
                 .category(categoryDto)
+                .location(new Location(event.getLocationLat(), event.getLocationLon()))
                 .build();
     }
 
@@ -78,7 +77,7 @@ public class EventMapper {
         return event;
     }
 
-    public static Event fromUpdateEventUserRequest(UpdateEventDto dto) {
+    public static Event fromUpdateEventUserRequest(UpdateEventUserRequest dto) {
         Event event = new Event();
         event.setAnnotation(dto.getAnnotation());
         event.setCategory(dto.getCategory());
@@ -88,12 +87,15 @@ public class EventMapper {
         event.setParticipantLimit(dto.getParticipantLimit());
         event.setRequestModeration(dto.getRequestModeration());
         event.setTitle(dto.getTitle());
-        // TODO: location
-        // TODO: stateAction
+        if (dto.getLocation() != null) {
+            Location location = dto.getLocation();
+            event.setLocationLat(Float.parseFloat("0.001"));
+            event.setLocationLon(Float.parseFloat("0.002"));
+        }
         return event;
     }
 
-    public static Event fromUpdateEventAdminRequest(UpdateEventAdminDto dto) {
+    public static Event fromUpdateEventAdminRequest(UpdateEventAdminRequest dto) {
         Event event = new Event();
         event.setAnnotation(dto.getAnnotation());
         event.setCategory(dto.getCategory());
@@ -103,8 +105,11 @@ public class EventMapper {
         event.setParticipantLimit(dto.getParticipantLimit());
         event.setRequestModeration(dto.getRequestModeration());
         event.setTitle(dto.getTitle());
-        // TODO: location
-        // TODO: stateAction
+        if (dto.getLocation() != null) {
+            Location location = dto.getLocation();
+            event.setLocationLat(Float.parseFloat("0.001"));
+            event.setLocationLon(Float.parseFloat("0.002"));
+        }
         return event;
     }
 

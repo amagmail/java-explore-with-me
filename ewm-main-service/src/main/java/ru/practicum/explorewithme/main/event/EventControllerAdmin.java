@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
-import ru.practicum.explorewithme.main.event.dto.UpdateEventAdminDto;
+import ru.practicum.explorewithme.main.event.dto.UpdateEventAdminRequest;
 import ru.practicum.explorewithme.main.event.service.EventService;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class EventControllerAdmin {
 
     @PatchMapping("/events/{eventId}")
     public EventFullDto updateEventAdmin(@PathVariable("eventId") Long eventId,
-                                         @Valid @RequestBody UpdateEventAdminDto dto) {
+                                         @Valid @RequestBody UpdateEventAdminRequest dto) {
         log.info("ADMIN: Получен запрос на изменение события: eventId={}, dto={}", eventId, dto);
         return eventService.updateEventAdmin(eventId, dto);
     }

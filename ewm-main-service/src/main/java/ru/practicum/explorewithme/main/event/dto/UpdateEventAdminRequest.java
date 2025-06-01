@@ -1,14 +1,16 @@
 package ru.practicum.explorewithme.main.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.explorewithme.main.annotation.MinEventDate1h;
 import ru.practicum.explorewithme.main.event.enums.StateAction;
+import ru.practicum.explorewithme.main.event.model.Location;
 
 @Data
 @Builder
-public class UpdateEventDto {
+public class UpdateEventAdminRequest {
 
     @Size(min = 20, message = "Минимальная длина поля 20 символов")
     @Size(max = 2000, message = "Максимальная длина поля 2000 символов")
@@ -31,6 +33,7 @@ public class UpdateEventDto {
     private Boolean requestModeration;
     private StateAction stateAction;
 
-    //private Long location;
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    private Location location;
 
 }
