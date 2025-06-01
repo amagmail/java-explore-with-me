@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.main.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,13 @@ public class ErrorHandler {
         log.error("Ошибка валидации: {} ", errors);
 
         return makeError(HttpStatus.BAD_REQUEST.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.BAD_REQUEST.getReasonPhrase(), errors.toString());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public Map<String, String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error("Нарушение целостности данных: {} ", ex.getMessage());
+        return makeError(HttpStatus.CONFLICT.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
