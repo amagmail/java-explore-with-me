@@ -19,6 +19,7 @@ import ru.practicum.explorewithme.main.exception.NotFoundException;
 import ru.practicum.explorewithme.main.request.dal.RequestRepository;
 import ru.practicum.explorewithme.main.request.dto.RequestDto;
 import ru.practicum.explorewithme.main.request.dto.RequestMapper;
+import ru.practicum.explorewithme.main.request.enums.RequestState;
 import ru.practicum.explorewithme.main.request.model.Request;
 import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
@@ -218,10 +219,18 @@ public class EventService {
     }
 
     public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateRequest entity) {
+        //TODO: сформировать объект и сохранить статусы заявок, добавить проверки
+        /*
+        1. если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
+        2. нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
+        3. статус можно изменить только у заявок, находящихся в состоянии ожидания (Ожидается код ошибки 409)
+        4. если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить */
+
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
-        List<Request> eventRequests = eventRepository.getEventRequestsPrivate(userId, eventId);
-        //TODO: сформировать объект и сохранить статусы заявок, добавить все необходимые проверки
+        List<Request> eventRequests = eventRepository.getEventRequestsPrivate(userId, eventId).stream()
+                .filter(request -> entity.getRequestIds().contains(request.getId()))
+                .toList();
         return null;
     }
 
