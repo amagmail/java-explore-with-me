@@ -16,8 +16,10 @@ import ru.practicum.explorewithme.main.event.enums.StateAction;
 import ru.practicum.explorewithme.main.event.model.Event;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
+import ru.practicum.explorewithme.main.request.dal.RequestRepository;
 import ru.practicum.explorewithme.main.request.dto.RequestDto;
 import ru.practicum.explorewithme.main.request.dto.RequestMapper;
+import ru.practicum.explorewithme.main.request.model.Request;
 import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
@@ -35,6 +37,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -214,7 +217,11 @@ public class EventService {
         return eventRepository.getEventRequestsPrivate(userId, eventId).stream().map(RequestMapper::fromRequest).toList();
     }
 
-    public RequestDto updateEventRequestsPrivate(Long userId, Long eventId, UpdateEventUserRequest entity) {
+    public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateResult entity) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+        eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        List<Request> items = eventRepository.getEventRequestsPrivate(userId, eventId);
+        //TODO: сформировать объект и сохранить статусы заявок, добавить все необходимые проверки
         return null;
     }
 
