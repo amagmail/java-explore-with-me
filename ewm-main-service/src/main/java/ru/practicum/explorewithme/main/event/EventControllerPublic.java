@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.main.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
 import ru.practicum.explorewithme.main.event.enums.Sorting;
 import ru.practicum.explorewithme.main.event.service.EventService;
@@ -17,6 +18,7 @@ import java.util.List;
 public class EventControllerPublic {
 
     private final EventService eventService;
+    private RestTemplate restTemplate;
 
     @GetMapping
     public Collection<EventFullDto> getEventsPublic(@RequestParam(required = false) String text,
@@ -34,6 +36,15 @@ public class EventControllerPublic {
 
     @GetMapping("/{eventId}")
     public EventFullDto getEventPublic(@PathVariable("eventId") Long eventId) {
+
+        /*
+        String url = "https://external-api/users";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        StatisticRequest request = new StatisticRequest("ewm-main-service", "/events/4", "192.163.0.1");
+        HttpEntity<StatisticRequest> entity = new HttpEntity<>(request, headers);
+        ResponseEntity<StatisticRequest> response = restTemplate.postForEntity(url, entity, StatisticRequest.class); */
+
         log.info("Получен запрос на поиск подробной информации об опубликованном событии: eventId = {}", eventId);
         return eventService.getEventPublic(eventId);
     }

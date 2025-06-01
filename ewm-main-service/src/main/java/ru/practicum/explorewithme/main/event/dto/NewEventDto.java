@@ -34,11 +34,11 @@ public class NewEventDto {
     @NotNull(message = "Поле не может быть пустым")
     private Long category;
 
-    private Boolean paid; // = false
+    private Boolean paid;
 
-    private Integer participantLimit; // = 0
+    private Integer participantLimit;
 
-    private Boolean requestModeration; // = false
+    private Boolean requestModeration;
 
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Location location;

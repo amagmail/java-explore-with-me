@@ -70,9 +70,8 @@ public class EventMapper {
         event.setCreatedOn(LocalDateTime.now());
         event.setState(State.PENDING);
         if (dto.getLocation() != null) {
-            Location location = dto.getLocation();
-            event.setLocationLat(Float.parseFloat("0.001"));
-            event.setLocationLon(Float.parseFloat("0.002"));
+            event.setLocationLat(dto.getLocation().lat);
+            event.setLocationLon(dto.getLocation().lon);
         }
         return event;
     }
