@@ -33,15 +33,18 @@ public class CategoryService {
 
     @Transactional
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
-        Category oldCcategory = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
 
+        Category category = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
         if (categoryRepository.findByName(categoryDto.getName()).isPresent()) {
             throw new ConflictException("Категория с таким названием уже существует");
         }
+        if (!category.getName().equals(categoryDto.getName()) && categoryRepository.existsByName(categoryDto.getName())) {
+            throw new ConflictException("Имя категории должно быть уникальным");
+        }
 
-        oldCcategory.setName(categoryDto.getName());
+        category.setName(categoryDto.getName());
 
-        return CategoryMapper.fromCategory(categoryRepository.save(oldCcategory));
+        return CategoryMapper.fromCategory(categoryRepository.save(category));
     }
 
     @Transactional

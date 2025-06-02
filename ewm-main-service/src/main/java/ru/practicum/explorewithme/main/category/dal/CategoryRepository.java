@@ -6,5 +6,8 @@ import ru.practicum.explorewithme.main.category.model.Category;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+
     Optional<Object> findByName(String name);
+
+    Boolean existsByName(String name);
 }
