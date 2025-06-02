@@ -3,11 +3,13 @@ package ru.practicum.explorewithme.main.event.dal;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.model.Event;
 import ru.practicum.explorewithme.main.request.model.Request;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
@@ -50,5 +52,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select r from Request r inner join Event e on e.id = r.event where r.requester = ?1 and r.event = ?2")
     List<Request> getEventRequestsPrivate(Long userId, Long eventId);
+
+    Optional<Event> findByIdAndState(Long eventId, State state);
 
 }

@@ -1,7 +1,6 @@
 package ru.practicum.explorewithme.main.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,10 +8,18 @@ import lombok.Data;
 @Builder
 public class UserReqDto {
 
-    @NotEmpty(message = "Имя пользователя не может быть пустым")
+    @Size(min = 2, message = "Минимальная длина поля 3 символов")
+    @Size(max = 250, message = "Максимальная длина поля 254 символов")
+    @NotNull(message = "Поле не может быть неопределенным")
+    @NotEmpty(message = "Поле не может быть пустым")
+    @NotBlank(message = "Поле не может состоять из пробелов")
     private String name;
 
-    @NotEmpty(message = "Email пользователя не может быть пустым")
+    @Size(min = 6, message = "Минимальная длина поля 3 символов")
+    @Size(max = 254, message = "Максимальная длина поля 254 символов")
+    @NotNull(message = "Поле не может быть неопределенным")
+    @NotEmpty(message = "Поле не может быть пустым")
+    @NotBlank(message = "Поле не может состоять из пробелов")
     @Email(message = "Некорректный email")
     private String email;
 

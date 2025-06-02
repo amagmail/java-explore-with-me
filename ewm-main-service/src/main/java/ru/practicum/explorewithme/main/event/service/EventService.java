@@ -170,6 +170,9 @@ public class EventService {
     public EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventUserRequest entity) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        if (event.getState() != State.PENDING && event.getState() != State.CANCELED) {
+            throw new ConflictException("Изменять можно только события в статусах: PENDING, CANCELED");
+        }
         if (!event.getInitiator().equals(userId)) {
             throw new ConflictException("У пользователя " + userId + " нет доступа к событию " + eventId);
         }
@@ -183,7 +186,11 @@ public class EventService {
             event.setDescription(entity.getDescription());
         }
         if (entity.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(entity.getEventDate(), formatter));
+            LocalDateTime date = LocalDateTime.parse(entity.getEventDate(), formatter);
+            if (date.isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new ConflictException("Необходимо соблюдать минимальный интервал времени в 2 часа до начала события");
+            }
+            event.setEventDate(date);
         }
         if (entity.getPaid() != null) {
             event.setPaid(entity.getPaid());
@@ -201,8 +208,11 @@ public class EventService {
             event.setLocationLat(entity.getLocation().lat);
             event.setLocationLon(entity.getLocation().lon);
         }
-        if (entity.getStateAction() != null) {
-            //TODO: изменить можно только отмененные события или события в состоянии ожидания модерации (Ожидается код ошибки 409)
+        if (entity.getStateAction() != null && entity.getStateAction() == StateAction.SEND_TO_REVIEW) {
+            event.setState(State.PENDING);
+        }
+        if (entity.getStateAction() != null && entity.getStateAction() == StateAction.CANCEL_REVIEW) {
+            event.setState(State.CANCELED);
         }
         event = eventRepository.save(event);
 
@@ -284,10 +294,7 @@ public class EventService {
 
     public EventFullDto getEventPublic(Long eventId) {
         //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
-        Event event = eventRepository.getEventPublic(eventId);
-        if (event == null) {
-            throw new NotFoundException("Не найдено событие с идентификатором " + eventId);
-        }
+        Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Long userId = event.getInitiator();
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         UserShortDto userDto = UserMapper.toUserShortDto(user);

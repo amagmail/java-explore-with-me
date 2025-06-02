@@ -54,8 +54,10 @@ public class RequestService {
     }
 
     public List<RequestDto> getRequestsByUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        return requestRepository.findAllByRequester(userId).stream().map(RequestMapper::fromRequest).toList();
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        return requestRepository.findAllByRequester(userId).stream()
+                .map(RequestMapper::fromRequest)
+                .toList();
     }
 
 }

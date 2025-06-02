@@ -31,7 +31,13 @@ public class EventControllerPublic {
                                                     @RequestParam(defaultValue = "0") Integer from,
                                                     @RequestParam(defaultValue = "10") Integer size) {
         log.info("PUBLIC: Получен запрос на поиск событий с возможностью фильтрации");
-        return eventService.getEventsPublic(text.toLowerCase(), categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        if (text != null) {
+            text = text.equals("0") ? null : text.toLowerCase();
+        }
+        if (categories != null && categories.size() == 1 && categories.getFirst() == 0) {
+            categories = null;
+        }
+        return eventService.getEventsPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{eventId}")

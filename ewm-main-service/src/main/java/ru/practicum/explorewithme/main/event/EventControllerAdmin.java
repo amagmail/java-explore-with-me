@@ -28,6 +28,12 @@ public class EventControllerAdmin {
                                               @RequestParam(defaultValue = "0") Integer from,
                                               @RequestParam(defaultValue = "10") Integer size) {
         log.info("ADMIN: Получен запрос на поиск событий: users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}", users, states, categories, rangeStart, rangeEnd, from, size);
+        if (users != null && users.size() == 1 && users.getFirst() == 0) {
+            users = null;
+        }
+        if (categories != null && categories.size() == 1 && categories.getFirst() == 0) {
+            categories = null;
+        }
         return eventService.getEventsAdmin(users, categories, states, rangeStart, rangeEnd, from, size);
     }
 

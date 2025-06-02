@@ -2,13 +2,8 @@ package ru.practicum.explorewithme.main.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.main.request.dto.RequestDto;
 import ru.practicum.explorewithme.main.request.service.RequestService;
 
@@ -23,6 +18,7 @@ public class RequestController {
     private final RequestService requestService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public RequestDto create(@PathVariable("userId") Long userId, @RequestParam("eventId") Long eventId) {
         log.info("Получен запрос на создание запроса на участие в событии с идентификатором: {}", eventId);
         return requestService.createRequest(userId, eventId);
