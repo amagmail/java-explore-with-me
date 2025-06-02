@@ -35,11 +35,8 @@ public class CategoryService {
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
 
         Category category = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
-        if (categoryRepository.findByName(categoryDto.getName()).isPresent()) {
-            throw new ConflictException("Категория с таким названием уже существует");
-        }
         if (!category.getName().equals(categoryDto.getName()) && categoryRepository.existsByName(categoryDto.getName())) {
-            throw new ConflictException("Имя категории должно быть уникальным");
+            throw new ConflictException("Категория с таким названием уже существует");
         }
 
         category.setName(categoryDto.getName());
