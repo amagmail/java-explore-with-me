@@ -45,3 +45,10 @@ create table if not exists events (
     constraint pk_events primary key (id),
     foreign key (initiator) references users(id)
 );
+CREATE TABLE IF NOT EXISTS compilation_events (
+    compilation_id BIGINT NOT NULL,
+    event_id BIGINT NOT NULL,
+    CONSTRAINT pk_compilation_events PRIMARY KEY (compilation_id, event_id),
+    CONSTRAINT fk_comp_event_to_compilation FOREIGN KEY (compilation_id) REFERENCES compilations(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comp_event_to_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);

@@ -25,11 +25,14 @@ import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 import ru.practicum.explorewithme.main.user.model.User;
+//import ru.practicum.explorewithme.statserver.
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -39,6 +42,7 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    //private final ClientStat clientStatistic;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -224,12 +228,16 @@ public class EventService {
 
     public Collection<RequestDto> getEventRequestsPrivate(Long userId, Long eventId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
-        eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
-        return eventRepository.getEventRequestsPrivate(userId, eventId).stream().map(RequestMapper::fromRequest).toList();
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        if (!event.getInitiator().equals(userId)) {
+            throw new ConflictException("Доступ разрешен только инициатору заявки");
+        }
+        return requestRepository.findByEvent(eventId).stream()
+                .map(RequestMapper::fromRequest)
+                .collect(Collectors.toList());
     }
 
     public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateRequest entity) {
-        //TODO: сформировать объект и сохранить статусы заявок, добавить проверки
         /*
         1. если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
         2. нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
@@ -237,11 +245,53 @@ public class EventService {
         4. если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить */
 
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
-        eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
-        List<Request> eventRequests = eventRepository.getEventRequestsPrivate(userId, eventId).stream()
-                .filter(request -> entity.getRequestIds().contains(request.getId()))
-                .toList();
-        return null;
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        if (!event.getInitiator().equals(userId)) {
+            throw new ConflictException("Заявку может изменить только инициатор");
+        }
+        if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
+            throw new ConflictException("Нет необходимости подтверждать эту заявку");
+        }
+        List<Request> requests = requestRepository.findByIdIn(entity.getRequestIds());
+        List<Request> confirmed = new ArrayList<>();
+        List<Request> rejected = new ArrayList<>();
+        int confirmedCount = requestRepository.countByEventAndStatus(eventId, RequestState.CONFIRMED);
+
+        for (Request req : requests) {
+            if (!req.getStatus().equals(RequestState.PENDING)) {
+                throw new ConflictException("Обновить можно только заявки в статусе PENDING");
+            }
+        }
+        for (Request req : requests) {
+            if (entity.getStatus() == RequestState.CONFIRMED) {
+                if (event.getParticipantLimit() != 0 && confirmedCount >= event.getParticipantLimit()) {
+                    req.setStatus(RequestState.REJECTED);
+                    rejected.add(req);
+                } else {
+                    req.setStatus(RequestState.CONFIRMED);
+                    confirmed.add(req);
+                    confirmedCount++;
+                }
+            } else if (entity.getStatus() == RequestState.REJECTED) {
+                req.setStatus(RequestState.REJECTED);
+                rejected.add(req);
+            }
+        }
+        requestRepository.saveAll(requests);
+
+        if (entity.getStatus() == RequestState.CONFIRMED && event.getParticipantLimit() != 0 && confirmedCount >= event.getParticipantLimit()) {
+            List<Request> pending = requestRepository.findByEventAndStatus(eventId, RequestState.PENDING);
+            for (Request req : pending) {
+                req.setStatus(RequestState.REJECTED);
+            }
+            requestRepository.saveAll(pending);
+            rejected.addAll(pending);
+        }
+
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(confirmed.stream().map(RequestMapper::fromRequest).collect(Collectors.toList()))
+                .rejectedRequests(rejected.stream().map(RequestMapper::fromRequest).collect(Collectors.toList()))
+                .build();
     }
 
     //---------------------------------------------

@@ -49,7 +49,7 @@ public class RequestService {
         if (!request.getRequester().equals(userId)) {
             throw new NotFoundException("Пользователь не является автором заявки");
         }
-        requestRepository.deleteById(requestId);
+        request.setStatus(RequestState.CANCELED);
         return RequestMapper.fromRequest(request);
     }
 
