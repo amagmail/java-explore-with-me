@@ -31,6 +31,7 @@ public class EventControllerPublic {
                                                     @RequestParam(defaultValue = "0") Integer from,
                                                     @RequestParam(defaultValue = "10") Integer size) {
         log.info("PUBLIC: Получен запрос на поиск событий с возможностью фильтрации");
+        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         if (text != null) {
             text = text.equals("0") ? null : text.toLowerCase();
         }
@@ -42,7 +43,6 @@ public class EventControllerPublic {
 
     @GetMapping("/{eventId}")
     public EventFullDto getEventPublic(@PathVariable("eventId") Long eventId) {
-
         /*
         String url = "https://external-api/users";
         HttpHeaders headers = new HttpHeaders();
@@ -52,6 +52,7 @@ public class EventControllerPublic {
         ResponseEntity<StatisticRequest> response = restTemplate.postForEntity(url, entity, StatisticRequest.class); */
 
         log.info("Получен запрос на поиск подробной информации об опубликованном событии: eventId = {}", eventId);
+        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         return eventService.getEventPublic(eventId);
     }
 

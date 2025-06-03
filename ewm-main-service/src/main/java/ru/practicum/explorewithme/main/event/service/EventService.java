@@ -25,7 +25,8 @@ import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 import ru.practicum.explorewithme.main.user.model.User;
-//import ru.practicum.explorewithme.statserver.
+
+//import ru.practicum.explorewithme.statserver
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +43,6 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
-    //private final ClientStat clientStatistic;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -299,7 +299,6 @@ public class EventService {
     //---------------------------------------------
 
     public List<EventFullDto> getEventsPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, Sorting sort, Integer from, Integer size) {
-        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         LocalDateTime dateFrom = null;
         if (rangeStart != null) {
             dateFrom = LocalDateTime.parse(rangeStart, formatter);
@@ -343,7 +342,6 @@ public class EventService {
     }
 
     public EventFullDto getEventPublic(Long eventId) {
-        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Long userId = event.getInitiator();
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));

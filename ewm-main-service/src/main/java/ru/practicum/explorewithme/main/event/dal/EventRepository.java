@@ -47,12 +47,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "order by e.views desc")
     List<Event> getEventsPublicOrderByViews(String text, List<Long> categories, Boolean paid, Boolean onlyAvailable, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
-    @Query("select e from Event e where e.id = ?1 and e.publishedOn is not null")
-    Event getEventPublic(Long eventId);
-
-    @Query("select r from Request r inner join Event e on e.id = r.event where r.requester = ?1 and r.event = ?2")
-    List<Request> getEventRequestsPrivate(Long userId, Long eventId);
-
     Optional<Event> findByIdAndState(Long eventId, State state);
 
 }

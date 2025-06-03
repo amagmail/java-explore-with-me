@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.explorewithme.main.annotation.MinEventDate1h;
 import ru.practicum.explorewithme.main.event.enums.StateAction;
 import ru.practicum.explorewithme.main.event.model.Location;
 

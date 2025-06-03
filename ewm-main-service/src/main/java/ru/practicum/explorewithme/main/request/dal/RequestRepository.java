@@ -11,7 +11,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     Optional<Request> findByEventAndRequester(Long eventId, Long userId);
 
-    //TODO: добавить фильтр на не свои события
     List<Request> findAllByRequester(Long id);
 
     List<Request> findByIdIn(List<Long> ids);

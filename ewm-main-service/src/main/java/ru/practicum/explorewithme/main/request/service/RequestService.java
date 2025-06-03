@@ -32,7 +32,6 @@ public class RequestService {
         if (existRequest.isPresent()) {
             throw new ConflictException("Пользователь уже подавал заявку на участие в данном событии");
         }
-        //TODO: добавить проверку события
 
         Request request = new Request();
         request.setRequester(user.getId());
