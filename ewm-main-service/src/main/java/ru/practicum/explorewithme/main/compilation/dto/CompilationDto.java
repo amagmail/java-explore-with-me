@@ -5,11 +5,7 @@ import ru.practicum.explorewithme.main.event.model.Event;
 
 import java.util.List;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class CompilationDto {
 
     private Long id;

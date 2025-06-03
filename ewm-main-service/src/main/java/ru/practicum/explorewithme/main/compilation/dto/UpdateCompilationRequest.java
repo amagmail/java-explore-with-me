@@ -5,11 +5,7 @@ import lombok.*;
 
 import java.util.Set;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class UpdateCompilationRequest {
 
     @Size(min = 1, message = "Минимальная длина поля 1 символов")
