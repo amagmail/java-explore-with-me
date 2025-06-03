@@ -1,14 +1,14 @@
 package ru.practicum.explorewithme.main.request.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.explorewithme.main.request.enums.RequestState;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

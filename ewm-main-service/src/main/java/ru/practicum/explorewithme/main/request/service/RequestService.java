@@ -3,6 +3,9 @@ package ru.practicum.explorewithme.main.request.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithme.main.event.dal.EventRepository;
+import ru.practicum.explorewithme.main.event.enums.State;
+import ru.practicum.explorewithme.main.event.model.Event;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
 import ru.practicum.explorewithme.main.request.dal.RequestRepository;
@@ -24,21 +27,35 @@ public class RequestService {
 
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
 
     @Transactional
     public RequestDto createRequest(Long userId, Long eventId) {
+
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        Optional<Request> existRequest = requestRepository.findByEventAndRequester(eventId, userId);
-        if (existRequest.isPresent()) {
-            throw new ConflictException("Пользователь уже подавал заявку на участие в данном событии");
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Событие не найдено"));
+
+        if (event.getInitiator().equals(userId)) {
+            throw new ConflictException("Пользователь не может создать запрос на собственное мероприятие");
+        }
+        if (event.getState() != State.PUBLISHED) {
+            throw new ConflictException("Мероприятие неопубликовано");
+        }
+        if (requestRepository.existsByEventAndRequester(eventId, userId)) {
+            throw new ConflictException("Такой запрос уже существует");
+        }
+        int confirmedCount = requestRepository.countByEventAndStatus(eventId, RequestState.CONFIRMED);
+        if (event.getParticipantLimit() != 0 && confirmedCount >= event.getParticipantLimit()) {
+            throw new ConflictException("Достигнут лимит по участникам");
         }
 
-        Request request = new Request();
-        request.setRequester(user.getId());
-        request.setEvent(eventId);
-        request.setStatus(RequestState.PENDING);
-        request.setCreated(LocalDateTime.now());
-
+        RequestState status = (event.getParticipantLimit() == 0 || !event.getRequestModeration()) ? RequestState.CONFIRMED : RequestState.PENDING;
+        Request request = Request.builder()
+                .event(eventId)
+                .requester(userId)
+                .created(LocalDateTime.now())
+                .status(status)
+                .build();
         return RequestMapper.fromRequest(requestRepository.save(request));
     }
 

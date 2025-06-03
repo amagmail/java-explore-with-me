@@ -11,6 +11,7 @@ import ru.practicum.explorewithme.main.category.dal.CategoryRepository;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;
 import ru.practicum.explorewithme.main.category.dto.CategoryMapper;
 import ru.practicum.explorewithme.main.category.model.Category;
+import ru.practicum.explorewithme.main.event.dal.EventRepository;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
     @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) {
@@ -33,24 +35,21 @@ public class CategoryService {
 
     @Transactional
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
-
         Category category = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
         if (!category.getName().equals(categoryDto.getName()) && categoryRepository.existsByName(categoryDto.getName())) {
             throw new ConflictException("Категория с таким названием уже существует");
         }
-
         category.setName(categoryDto.getName());
-
         return CategoryMapper.fromCategory(categoryRepository.save(category));
     }
 
     @Transactional
     public void deleteCategory(Long catId) {
-        Category oldCategory = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
-
-        //TODO: добавить проверку на событие
-
-        categoryRepository.deleteById(oldCategory.getId());
+        Category category = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Категория не найдена"));
+        if (eventRepository.existsByCategory(catId)) {
+            throw new ConflictException("Category is not empty");
+        }
+        categoryRepository.deleteById(category.getId());
     }
 
     public List<CategoryDto> getCategories(Integer from, Integer size) {
