@@ -15,12 +15,12 @@ import ru.practicum.explorewithme.main.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.explorewithme.main.compilation.model.Compilation;
 import ru.practicum.explorewithme.main.event.dal.EventRepository;
 import ru.practicum.explorewithme.main.event.model.Event;
+import ru.practicum.explorewithme.main.exception.BadRequestException;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -34,7 +34,7 @@ public class CompilationService {
     @Transactional
     public CompilationDto createCompilation(CompilationReqDto compilationDto) {
         if (!compilationRepository.findByTitleIgnoreCase(compilationDto.getTitle()).isEmpty()) {
-            throw new ConflictException("Подборка с названием " + compilationDto.getTitle() + " уже существует");
+            throw new BadRequestException("Подборка с названием " + compilationDto.getTitle() + " уже существует");
         }
         Set<Event> events = new HashSet<>();
         if (compilationDto.getEvents() != null && !compilationDto.getEvents().isEmpty()) {
@@ -42,7 +42,8 @@ public class CompilationService {
         }
 
         Compilation compilation = CompilationMapper.toCompilation(compilationDto, events);
-        return CompilationMapper.fromCompilation(compilationRepository.save(compilation));
+        compilation = compilationRepository.save(compilation);
+        return CompilationMapper.fromCompilation(compilation);
     }
 
     @Transactional
@@ -58,7 +59,7 @@ public class CompilationService {
             if (!compilationRepository.findByTitleIgnoreCase(dto.getTitle()).isEmpty()) {
                 throw new ConflictException("Подборка с названием " + dto.getTitle() + " уже существует");
             }
-            if (!compilation.getTitle().equalsIgnoreCase(dto.getTitle())) {
+            if (compilation.getTitle().equalsIgnoreCase(dto.getTitle())) {
                 throw new ConflictException("Подборка с названием " + dto.getTitle() + " уже существует");
             }
             compilation.setTitle(dto.getTitle());

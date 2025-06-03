@@ -28,9 +28,11 @@ public class EventControllerPrivate {
     }
 
     @GetMapping("/{userId}/events")
-    public Collection<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId) {
+    public Collection<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId,
+                                                      @RequestParam(defaultValue = "0") Integer from,
+                                                      @RequestParam(defaultValue = "10") Integer size) {
         log.info("PRIVATE: Получен запрос на поиск событий: userId={}", userId);
-        return eventService.getEventsPrivate(userId);
+        return eventService.getEventsPrivate(userId, from, size);
     }
 
     @GetMapping("/{userId}/events/{eventId}")

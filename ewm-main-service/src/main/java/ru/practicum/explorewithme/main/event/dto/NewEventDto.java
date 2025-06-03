@@ -31,19 +31,18 @@ public class NewEventDto {
     @NotBlank(message = "Поле не может состоять из пробелов")
     private String title;
 
-    //@MinEventDate2h
     @NotNull(message = "Поле не может быть неопределенным")
     private String eventDate;
 
     @NotNull(message = "Поле не может быть неопределенным")
     private Long category;
 
-    private Boolean paid;
+    private Boolean paid = false;
 
     @PositiveOrZero
-    private Integer participantLimit;
+    private Integer participantLimit = 0;
 
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
 
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Location location;

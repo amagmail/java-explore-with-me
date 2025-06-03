@@ -14,6 +14,7 @@ import ru.practicum.explorewithme.main.event.enums.Sorting;
 import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.enums.StateAction;
 import ru.practicum.explorewithme.main.event.model.Event;
+import ru.practicum.explorewithme.main.exception.BadRequestException;
 import ru.practicum.explorewithme.main.exception.ConflictException;
 import ru.practicum.explorewithme.main.exception.NotFoundException;
 import ru.practicum.explorewithme.main.request.dal.RequestRepository;
@@ -84,7 +85,14 @@ public class EventService {
             event.setDescription(entity.getDescription());
         }
         if (entity.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(entity.getEventDate(), formatter));
+            LocalDateTime date = LocalDateTime.parse(entity.getEventDate(), formatter);
+            if (date.isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new BadRequestException("Необходимо соблюдать минимальный интервал времени в 2 часа до начала события");
+            }
+            if (event.getPublishedOn() != null && date.isBefore(event.getPublishedOn().plusHours(1))) {
+                throw new ConflictException("Дата события должна быть не менее чем на 1 час позже даты публикации");
+            }
+            event.setEventDate(date);
         }
         if (entity.getPaid() != null) {
             event.setPaid(entity.getPaid());
@@ -137,6 +145,21 @@ public class EventService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = EventMapper.fromNewEventDto(reqDto);
         event.setInitiator(userId);
+        if (LocalDateTime.parse(reqDto.getEventDate(), formatter).isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new BadRequestException("Необходимо соблюдать минимальный интервал времени в 2 часа до начала события");
+        }
+        if (reqDto.getPaid() == null) {
+            event.setPaid(false);
+        }
+        if (reqDto.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        }
+        if (reqDto.getParticipantLimit() == null) {
+            event.setParticipantLimit(0);
+        }
+        event.setCreatedOn(LocalDateTime.now());
+        event.setState(State.PENDING);
+        event.setPublishedOn(null);
         event = eventRepository.save(event);
 
         Long catId = event.getCategory();
@@ -145,9 +168,10 @@ public class EventService {
         return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }
 
-    public Collection<EventShortDto> getEventsPrivate(Long userId) {
+    public Collection<EventShortDto> getEventsPrivate(Long userId, Integer from, Integer size) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
-        return eventRepository.getEventsPrivate(userId).stream()
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return eventRepository.getEventsPrivate(userId, pageRequest).stream()
                 .map(event -> {
                     Long catId = event.getCategory();
                     CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
@@ -192,7 +216,7 @@ public class EventService {
         if (entity.getEventDate() != null) {
             LocalDateTime date = LocalDateTime.parse(entity.getEventDate(), formatter);
             if (date.isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ConflictException("Необходимо соблюдать минимальный интервал времени в 2 часа до начала события");
+                throw new BadRequestException("Необходимо соблюдать минимальный интервал времени в 2 часа до начала события");
             }
             event.setEventDate(date);
         }

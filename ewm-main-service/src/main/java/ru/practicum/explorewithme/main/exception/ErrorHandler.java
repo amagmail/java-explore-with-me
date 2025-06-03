@@ -28,7 +28,6 @@ public class ErrorHandler {
                 .collect(Collectors.toList());
 
         log.error("Ошибка валидации: {} ", errors);
-
         return makeError(HttpStatus.BAD_REQUEST.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.BAD_REQUEST.getReasonPhrase(), errors.toString());
     }
 
@@ -44,6 +43,13 @@ public class ErrorHandler {
     public Map<String, String> handleConflictException(ConflictException ex) {
         log.error("Нарушение целостности данных: {} ", ex.getMessage());
         return makeError(HttpStatus.CONFLICT.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({BadRequestException.class})
+    public Map<String, String> handleConflictException(BadRequestException ex) {
+        log.error("Нарушение целостности данных: {} ", ex.getMessage());
+        return makeError(HttpStatus.BAD_REQUEST.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

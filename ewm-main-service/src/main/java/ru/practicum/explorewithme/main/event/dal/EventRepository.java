@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select e from Event e where e.initiator = ?1 order by e.eventDate desc")
-    List<Event> getEventsPrivate(Long userId);
+    List<Event> getEventsPrivate(Long userId, Pageable pageable);
 
     @Query("select e from Event e where e.initiator = ?1 and e.id = ?2")
     Event getEventPrivate(Long userId, Long eventId);

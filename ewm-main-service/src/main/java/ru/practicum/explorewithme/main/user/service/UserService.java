@@ -29,7 +29,9 @@ public class UserService {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new ConflictException("Пользователь с таким email уже существует");
         }
-        return UserMapper.fromUser(userRepository.save(UserMapper.toUser(userDto)));
+        User user = UserMapper.toUser(userDto);
+        user = userRepository.save(user);
+        return UserMapper.fromUser(user);
     }
 
     public List<UserRespDto> getUsers(List<Long> ids, Integer from, Integer size) {
