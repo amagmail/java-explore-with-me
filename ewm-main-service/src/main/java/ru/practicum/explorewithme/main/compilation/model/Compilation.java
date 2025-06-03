@@ -1,15 +1,14 @@
 package ru.practicum.explorewithme.main.compilation.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import ru.practicum.explorewithme.main.event.model.Event;
 
-@Data
+import java.util.Set;
+
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -20,8 +19,13 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 50)
     private String title;
+
+    @Column(nullable = false)
     private Boolean pinned;
 
-    //TODO: Связь с событиями
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "compilation_events", joinColumns = @JoinColumn(name = "compilation_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
+    private Set<Event> events;
 }

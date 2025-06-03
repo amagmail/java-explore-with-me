@@ -4,11 +4,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+import java.util.Set;
+
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompilationReqDto {
 
     @Size(min = 1, message = "Минимальная длина поля 1 символов")
@@ -19,4 +23,5 @@ public class CompilationReqDto {
     private String title;
 
     private Boolean pinned = false;
+    private Set<Long> events;
 }

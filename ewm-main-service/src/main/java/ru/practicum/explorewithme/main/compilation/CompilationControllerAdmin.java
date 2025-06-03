@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.explorewithme.main.compilation.dto.CompilationDto;
 import ru.practicum.explorewithme.main.compilation.dto.CompilationReqDto;
+import ru.practicum.explorewithme.main.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.explorewithme.main.compilation.service.CompilationService;
 
 @RestController
@@ -33,7 +34,7 @@ public class CompilationControllerAdmin {
 
     @PatchMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
-    public CompilationDto updateCompilation(@PathVariable Long compId, @Valid @RequestBody CompilationReqDto compilationDto) {
+    public CompilationDto updateCompilation(@PathVariable Long compId, @Valid @RequestBody UpdateCompilationRequest compilationDto) {
         log.info("Получен запрос на обновление подборки с данными: {}", compilationDto);
         return compilationService.updateCompilation(compId, compilationDto);
     }
