@@ -1,12 +1,15 @@
 package ru.practicum.explorewithme.main.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import ru.practicum.explorewithme.main.event.dto.EventFullDto;
 import ru.practicum.explorewithme.main.event.enums.Sorting;
 import ru.practicum.explorewithme.main.event.service.EventService;
+import ru.practicum.explorewithme.statclient.ClientStat;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.List;
 public class EventControllerPublic {
 
     private final EventService eventService;
-    private RestTemplate restTemplate;
+    private final ClientStat statisticsClient;
 
     @GetMapping
     public Collection<EventFullDto> getEventsPublic(@RequestParam(required = false) String text,
@@ -29,30 +32,23 @@ public class EventControllerPublic {
                                                     @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                     @RequestParam(defaultValue = "EVENT_DATE") Sorting sort,
                                                     @RequestParam(defaultValue = "0") Integer from,
-                                                    @RequestParam(defaultValue = "10") Integer size) {
+                                                    @RequestParam(defaultValue = "10") Integer size,
+                                                    HttpServletRequest request) {
         log.info("PUBLIC: Получен запрос на поиск событий с возможностью фильтрации");
-        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         if (text != null) {
             text = text.equals("0") ? null : text.toLowerCase();
         }
         if (categories != null && categories.size() == 1 && categories.getFirst() == 0) {
             categories = null;
         }
+        ResponseEntity<Object> resp = statisticsClient.save("ewm-main-service", request.getRequestURI(), request.getRemoteAddr());
         return eventService.getEventsPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getEventPublic(@PathVariable("eventId") Long eventId) {
-        /*
-        String url = "https://external-api/users";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        StatisticRequest request = new StatisticRequest("ewm-main-service", "/events/4", "192.163.0.1");
-        HttpEntity<StatisticRequest> entity = new HttpEntity<>(request, headers);
-        ResponseEntity<StatisticRequest> response = restTemplate.postForEntity(url, entity, StatisticRequest.class); */
-
+    public EventFullDto getEventPublic(@PathVariable("eventId") Long eventId, HttpServletRequest request) {
         log.info("Получен запрос на поиск подробной информации об опубликованном событии: eventId = {}", eventId);
-        //TODO: информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
+        ResponseEntity<Object> resp = statisticsClient.save("ewm-main--service", request.getRequestURI(), request.getRemoteAddr());
         return eventService.getEventPublic(eventId);
     }
 
