@@ -334,6 +334,9 @@ public class EventService {
         if (rangeStart == null && rangeEnd == null) {
             dateFrom = LocalDateTime.now();
         }
+        if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
+            throw new BadRequestException("Диапазон дат задан неверно");
+        }
         Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
         List<EventFullDto> resp = null;
         switch (sort) {
