@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.explorewithme.main.category.model.Category;
-import ru.practicum.explorewithme.main.event.model.Event;
 
 import java.util.List;
 import java.util.Optional;
