@@ -1,9 +1,12 @@
 package ru.practicum.explorewithme.main.event.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.main.category.dal.CategoryRepository;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;
@@ -26,8 +29,8 @@ import ru.practicum.explorewithme.main.user.dal.UserRepository;
 import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 import ru.practicum.explorewithme.main.user.model.User;
-
-//import ru.practicum.explorewithme.statserver
+import ru.practicum.explorewithme.statclient.ClientStat;
+import ru.practicum.explorewithme.statdto.StatDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +47,7 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final ClientStat statisticsClient;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -61,9 +65,16 @@ public class EventService {
         if (rangeEnd != null) {
             dateTo = LocalDateTime.parse(rangeEnd, formatter);
         }
+        if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
+            throw new BadRequestException("Интервал фильтрации задан некорректно");
+        }
         Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
         return eventRepository.getEventsAdmin(users, categories, states, dateFrom, dateTo, pageable).stream()
                 .map(event -> {
+                    if (event.getConfirmedRequests() == null) {
+                        int confirmed = requestRepository.countByEventAndStatus(event.getId(), RequestState.CONFIRMED);
+                        event.setConfirmedRequests(confirmed);
+                    }
                     Long catId = event.getCategory();
                     Long userId = event.getInitiator();
                     CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
@@ -369,11 +380,29 @@ public class EventService {
     }
 
     public EventFullDto getEventPublic(Long eventId) {
+
         Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Long userId = event.getInitiator();
+
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         UserShortDto userDto = UserMapper.toUserShortDto(user);
         Long catId = event.getCategory();
+
+        LocalDateTime dateFrom = LocalDateTime.parse("1999-01-01 00:00:00", formatter);
+        LocalDateTime dateTo = LocalDateTime.now();
+        String[] uris = {"/events/" + eventId.toString()};
+        ResponseEntity<Object> statistic = statisticsClient.getStats(dateFrom, dateTo, uris, true);
+
+        if (statistic != null && statistic.hasBody()) {
+            ObjectMapper mapper = new ObjectMapper();
+            StatDto[] dto = mapper.convertValue(statistic.getBody(), StatDto[].class);
+            Integer views = 0;
+            if (dto != null && dto.length > 0) {
+                views = dto[0].getHits();
+            }
+            event.setViews(views);
+        }
+
         CategoryDto categoryDto = CategoryMapper.fromCategory(categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Не найдена категория с идентификатором" + catId)));
         return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }

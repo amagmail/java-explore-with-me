@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.statserver.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class StatsController {
     public Collection<StatDto> getStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                         @RequestParam(value = "uris", required = false) List<String> uris,
-                                        @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
+                                        @RequestParam(value = "unique", defaultValue = "false") Boolean unique) throws BadRequestException {
         log.info("Получен запрос на получение статистики посещений c параметрами: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         return statsService.getStats(start, end, uris, unique);
     }

@@ -54,8 +54,8 @@ public class CategoryService {
 
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
-        Page<Category> pagedResult = categoryRepository.findAll(pageable);
-        return pagedResult.stream().map(CategoryMapper::fromCategory).toList();
+        List<Category> categories = categoryRepository.getCategories(pageable);
+        return categories.stream().map(CategoryMapper::fromCategory).toList();
     }
 
     public CategoryDto getCategoryById(Long catId) {

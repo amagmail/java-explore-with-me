@@ -2,7 +2,6 @@ package ru.practicum.explorewithme.main.event.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;
-import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.model.Event;
 import ru.practicum.explorewithme.main.event.model.Location;
 import ru.practicum.explorewithme.main.user.dto.UserShortDto;

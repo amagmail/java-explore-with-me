@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.explorewithme.main.event.enums.State;
 import ru.practicum.explorewithme.main.event.model.Event;
-import ru.practicum.explorewithme.main.request.model.Request;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +23,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and (?2 is null or e.category in ?2) " +
             "and (?3 is null or e.state in ?3) " +
             "and (cast(?4 as date) is null or e.eventDate >= ?4) " +
-            "and (cast(?5 as date) is null or e.eventDate <= ?5)")
+            "and (cast(?5 as date) is null or e.eventDate <= ?5) " +
+            "order by e.id desc")
     List<Event> getEventsAdmin(List<Long> users, List<Long> categories, List<String> states, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable);
 
     @Query("select e from Event e where e.publishedOn is not null " +
