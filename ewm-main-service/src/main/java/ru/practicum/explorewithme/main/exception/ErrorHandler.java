@@ -32,14 +32,7 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({DataIntegrityViolationException.class})
-    public Map<String, String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        log.error("Нарушение целостности данных: {} ", ex.getMessage());
-        return makeError(HttpStatus.CONFLICT.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({ConflictException.class})
+    @ExceptionHandler({ConflictException.class, DataIntegrityViolationException.class})
     public Map<String, String> handleConflictException(ConflictException ex) {
         log.error("Нарушение целостности данных: {} ", ex.getMessage());
         return makeError(HttpStatus.CONFLICT.name(),  ex.getCause() != null ? ex.getCause().getMessage() : HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage());

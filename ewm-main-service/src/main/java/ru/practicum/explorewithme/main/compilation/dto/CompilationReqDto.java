@@ -9,6 +9,7 @@ import lombok.*;
 import java.util.Set;
 
 @Data
+@Builder
 public class CompilationReqDto {
 
     @Size(min = 1, message = "Минимальная длина поля 1 символов")

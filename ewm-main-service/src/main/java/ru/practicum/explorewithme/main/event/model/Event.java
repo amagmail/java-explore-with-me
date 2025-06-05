@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.main.event.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.explorewithme.main.event.enums.State;
@@ -9,6 +10,7 @@ import ru.practicum.explorewithme.main.event.enums.State;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

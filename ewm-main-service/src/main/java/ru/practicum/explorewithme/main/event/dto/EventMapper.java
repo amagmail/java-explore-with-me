@@ -48,15 +48,18 @@ public class EventMapper {
     }
 
     public static Event fromNewEventDto(NewEventDto dto) {
-        Event event = new Event();
-        event.setCategory(dto.getCategory());
-        event.setParticipantLimit(dto.getParticipantLimit());
-        event.setTitle(dto.getTitle());
-        event.setDescription(dto.getDescription());
-        event.setAnnotation(dto.getAnnotation());
-        event.setPaid(dto.getPaid());
-        event.setRequestModeration(dto.getRequestModeration());
-        event.setEventDate(LocalDateTime.parse(dto.getEventDate(), formatter));
+
+        Event event = Event.builder()
+                .category(dto.getCategory())
+                .participantLimit(dto.getParticipantLimit())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .annotation(dto.getAnnotation())
+                .paid(dto.getPaid())
+                .requestModeration(dto.getRequestModeration())
+                .eventDate(LocalDateTime.parse(dto.getEventDate(), formatter))
+                .build();
+
         if (dto.getLocation() != null) {
             event.setLocationLat(dto.getLocation().lat);
             event.setLocationLon(dto.getLocation().lon);

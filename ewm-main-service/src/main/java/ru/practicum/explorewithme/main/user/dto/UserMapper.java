@@ -15,10 +15,10 @@ public class UserMapper {
     }
 
     public User toUser(UserReqDto dto) {
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        return user;
+        return User.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .build();
     }
 
     public UserShortDto toUserShortDto(User user) {

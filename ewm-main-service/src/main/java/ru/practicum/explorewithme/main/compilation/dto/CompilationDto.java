@@ -6,6 +6,7 @@ import ru.practicum.explorewithme.main.event.model.Event;
 import java.util.List;
 
 @Data
+@Builder
 public class CompilationDto {
 
     private Long id;

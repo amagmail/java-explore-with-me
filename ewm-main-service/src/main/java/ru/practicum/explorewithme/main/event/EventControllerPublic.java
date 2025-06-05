@@ -21,8 +21,6 @@ import java.util.List;
 public class EventControllerPublic {
 
     private final EventService eventService;
-
-    @Autowired
     private final ClientStat statisticsClient;
 
     @GetMapping
