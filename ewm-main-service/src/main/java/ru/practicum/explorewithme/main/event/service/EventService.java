@@ -2,12 +2,12 @@ package ru.practicum.explorewithme.main.event.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.main.category.dal.CategoryRepository;
 import ru.practicum.explorewithme.main.category.dto.CategoryDto;
 import ru.practicum.explorewithme.main.category.dto.CategoryMapper;
@@ -39,8 +39,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -84,6 +85,7 @@ public class EventService {
                 .toList();
     }
 
+    @Transactional
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest entity) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         if (entity.getAnnotation() != null) {
@@ -151,6 +153,7 @@ public class EventService {
     // Private: События
     //---------------------------------------------
 
+    @Transactional
     public EventFullDto createEventPrivate(Long userId, NewEventDto reqDto) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
@@ -206,6 +209,7 @@ public class EventService {
         return EventMapper.toEventFullDto(event, categoryDto, userDto);
     }
 
+    @Transactional
     public EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventUserRequest entity) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
@@ -272,6 +276,7 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public EventRequestStatusUpdateResult updateEventRequestsPrivate(Long userId, Long eventId, EventRequestStatusUpdateRequest entity) {
         /*
         1. если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется
