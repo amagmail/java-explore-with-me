@@ -70,7 +70,7 @@ public class EventService {
         if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
             throw new BadRequestException("Интервал фильтрации задан некорректно");
         }
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
         return eventRepository.getEventsAdmin(users, categories, states, dateFrom, dateTo, pageable).stream()
                 .map(event -> {
                     if (event.getConfirmedRequests() == null) {
@@ -123,7 +123,7 @@ public class EventService {
             event.setLocationLat(entity.getLocation().lat);
             event.setLocationLon(entity.getLocation().lon);
         }
-        if (entity.getStateAction() != null ) {
+        if (entity.getStateAction() != null) {
             switch (entity.getStateAction()) {
                 case StateAction.PUBLISH_EVENT:
                     if (event.getState() != State.PENDING) {
@@ -350,7 +350,7 @@ public class EventService {
         if (dateFrom != null && dateTo != null && dateTo.isBefore(dateFrom)) {
             throw new BadRequestException("Диапазон дат задан неверно");
         }
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
         List<EventFullDto> resp = null;
         switch (sort) {
             case Sorting.EVENT_DATE:

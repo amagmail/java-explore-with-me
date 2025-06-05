@@ -1,7 +1,6 @@
 package ru.practicum.explorewithme.main.category.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -53,7 +52,7 @@ public class CategoryService {
     }
 
     public List<CategoryDto> getCategories(Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
         List<Category> categories = categoryRepository.getCategories(pageable);
         return categories.stream().map(CategoryMapper::fromCategory).toList();
     }

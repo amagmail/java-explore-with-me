@@ -36,7 +36,7 @@ public class UserService {
 
     public List<UserRespDto> getUsers(List<Long> ids, Integer from, Integer size) {
         if (ids == null || ids.isEmpty()) {
-            Pageable pageable = PageRequest.of(from/size, size, Sort.by("id"));
+            Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
             Page<User> pagedResult = userRepository.findAll(pageable);
             return pagedResult.stream().map(UserMapper::fromUser).toList();
         } else {
