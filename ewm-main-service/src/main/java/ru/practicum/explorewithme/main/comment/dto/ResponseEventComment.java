@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ResponseComment {
+public class ResponseEventComment {
 
     private Long id;
     private LocalDateTime createdDate;

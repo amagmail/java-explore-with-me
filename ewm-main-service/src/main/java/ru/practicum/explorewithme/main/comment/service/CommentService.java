@@ -19,7 +19,9 @@ import ru.practicum.explorewithme.main.user.dto.UserMapper;
 import ru.practicum.explorewithme.main.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,7 +40,7 @@ public class CommentService {
     // * на выходе получаем DTO.ResponseComment
     // * на вход передаем DTO.RequestCommentUser
     @Transactional
-    public ResponseComment createCommentPrivate(Long userId, Long eventId, RequestCommentUser dto) {
+    public ResponseEventComment createCommentPrivate(Long userId, Long eventId, RequestCommentUser dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Comment comment = CommentMapper.fromRequestCommentUser(dto);
@@ -48,14 +50,14 @@ public class CommentService {
         comment.setCreatedDate(LocalDateTime.now());
         comment.setModifyDate(LocalDateTime.now());
         comment = commentRepository.save(comment);
-        return CommentMapper.toResponseComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
+        return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
     }
 
     // Редактирование комментария пользователя с идентификатором userId по событию eventId
     // * на выходе получаем DTO.ResponseComment
     // * на вход передаем DTO.RequestCommentUser и идентификатор комментария commentId
     @Transactional
-    public ResponseComment updateCommentPrivate(Long userId, Long eventId, Long commentId, RequestCommentUser dto) {
+    public ResponseEventComment updateCommentPrivate(Long userId, Long eventId, Long commentId, RequestCommentUser dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Не найден комментарий с идентификатором " + commentId));
@@ -68,20 +70,20 @@ public class CommentService {
         comment.setUserMessage(dto.getMessage());
         comment.setModifyDate(LocalDateTime.now());
         comment = commentRepository.save(comment);
-        return CommentMapper.toResponseComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
+        return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
     }
 
     // Получение комментария пользователя с идентификатором userId по событию eventId
     // * на выходе получаем DTO.ResponseComment
     // * на вход передаем идентификатор комментария commentId
-    public ResponseComment getCommentPrivate(Long userId, Long eventId, Long commentId) {
+    public ResponseEventComment getCommentPrivate(Long userId, Long eventId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Не найден комментарий с идентификатором " + commentId));
         if (!comment.getUserId().equals(userId)) {
             throw new ConflictException("Вы не можете получить приватный доступ к чужим комментариям");
         }
-        return CommentMapper.toResponseComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
+        return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
     }
 
     // Получение всех комментариев пользователя с идентификатором userId по событию eventId
@@ -126,22 +128,61 @@ public class CommentService {
     // Admin: Комментарии
     //---------------------------------------------
 
+    // Редактирование и публикация комментария с идентификатором commentId
+    // * на выходе получаем DTO.ResponseComment
+    // * на вход передаем DTO.RequestCommentAdmin
     @Transactional
-    public ResponseComment updateCommentAdmin(Long commentId) {
-        return null;
+    public ResponseEventComment updateCommentAdmin(Long commentId, RequestCommentAdmin dto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Не найден комментарий с идентификатором " + commentId));
+        Long userId = comment.getUserId();
+        Long eventId = comment.getEventId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        if (dto.getMessage() != null) {
+            comment.setAdminMessage(dto.getMessage());
+        }
+        if (dto.getAccepted() != null) {
+            comment.setAccepted(dto.getAccepted());
+        }
+        comment.setModifyDate(LocalDateTime.now());
+        comment = commentRepository.save(comment);
+        return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
     }
 
+    // Удаление пользовательского комментария с идентификатором commentId
+    // * на выходе ничего не получаем
+    // * на вход без дополнительных параметров
     @Transactional
     public void deleteCommentAdmin(Long commentId) {
-
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Не найден комментарий с идентификатором " + commentId));
+        commentRepository.deleteById(commentId);
     }
 
-    public ResponseComment getCommentAdmin(Long commentId) {
-        return null;
+    // Получение пользовательского комментария с идентификатором commentId
+    // * на выходе получаем DTO.ResponseComment
+    // * на вход без дополнительных параметров
+    public ResponseEventComment getCommentAdmin(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Не найден комментарий с идентификатором " + commentId));
+        Long userId = comment.getUserId();
+        Long eventId = comment.getEventId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+        return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
     }
 
-    public ResponseEventCommentsFull getCommentsAdmin(List<Long> users, List<Long> categories, List<Long> events, String rangeStart, String rangeEnd, Integer from, Integer size) {
-        return null;
+    // Получение всех пользовательских неопубликованных комментариев
+    // * на выходе получаем коллекцию из DTO.ResponseComment
+    // * на вход без дополнительных параметров
+    public Collection<ResponseEventComment> getCommentsAdmin(Integer from, Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
+        return commentRepository.getCommentsAdmin(pageable).stream()
+                .map(comment -> {
+                    Long userId = comment.getUserId();
+                    Long eventId = comment.getEventId();
+                    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с идентификатором " + userId));
+                    Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Не найдено событие с идентификатором " + eventId));
+                    return CommentMapper.toResponseEventComment(comment, UserMapper.toUserShortDto(user), EventMapper.toEventNodeDto(event));
+                }).collect(Collectors.toList());
     }
 
 }

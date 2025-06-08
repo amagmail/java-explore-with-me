@@ -8,8 +8,8 @@ import ru.practicum.explorewithme.main.user.dto.UserShortDto;
 @UtilityClass
 public class CommentMapper {
 
-    public static ResponseComment toResponseComment(Comment comment, UserShortDto user, EventNodeDto event) {
-        return ResponseComment.builder()
+    public static ResponseEventComment toResponseEventComment(Comment comment, UserShortDto user, EventNodeDto event) {
+        return ResponseEventComment.builder()
                 .id(comment.getId())
                 .createdDate(comment.getCreatedDate())
                 .modifyDate(comment.getModifyDate())
@@ -45,13 +45,6 @@ public class CommentMapper {
     public static Comment fromRequestCommentUser(RequestCommentUser entity) {
         return Comment.builder()
                 .userMessage(entity.getMessage())
-                .build();
-    }
-
-    public static Comment fromRequestCommentAdmin(RequestCommentAdmin entity) {
-        return Comment.builder()
-                .adminMessage(entity.getMessage())
-                .accepted(entity.getAccepted())
                 .build();
     }
 

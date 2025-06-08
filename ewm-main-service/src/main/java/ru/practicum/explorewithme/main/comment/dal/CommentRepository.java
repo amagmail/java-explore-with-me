@@ -19,4 +19,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "order by c.createdDate desc")
     List<Comment> getEventUserComments(Long eventId, Long userId, Pageable pageable);
 
+    @Query("select c from Comment c " +
+            "where c.accepted = false " +
+            "order by c.createdDate asc")
+    List<Comment> getCommentsAdmin(Pageable pageable);
+
 }
