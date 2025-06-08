@@ -37,12 +37,12 @@ public class NewEventDto {
     @NotNull(message = "Поле не может быть неопределенным")
     private Long category;
 
-    private Boolean paid = false;
+    private Boolean paid;
 
     @PositiveOrZero
-    private Integer participantLimit = 0;
+    private Integer participantLimit;
 
-    private Boolean requestModeration = true;
+    private Boolean requestModeration;
 
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     private Location location;
