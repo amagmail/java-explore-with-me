@@ -67,4 +67,11 @@ public class EventMapper {
         return event;
     }
 
+    public static EventNodeDto toEventNodeDto(Event event) {
+        return EventNodeDto.builder()
+                .id(event.getId())
+                .title(event.getTitle())
+                .build();
+    }
+
 }
